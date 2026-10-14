@@ -1,0 +1,2592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DigitScopeAI - ALL Markets + Frequency Bars</title>
+
+<style>
+*{
+box-sizing:border-box;
+font-family:Arial
+}
+
+body{
+margin:0;
+background:#000;
+color:#FFD700;
+display:flex;
+flex-direction:column;
+min-height:100vh
+}
+
+#loginPage{
+flex:1;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+padding:20px;
+background:radial-gradient(circle at top,#3a3000,#000);
+min-height:100vh
+}
+
+.logo{
+font-size:38px;
+font-weight:900;
+color:#FFD700
+}
+
+.logo span{
+color:#000;
+background:#FFD700;
+padding:2px 10px;
+border-radius:8px;
+margin-left:6px
+}
+
+.loginBox{
+background:linear-gradient(180deg,#ffef9c,#d4af37);
+border:2px solid #FFD700;
+border-radius:20px;
+padding:20px;
+width:100%;
+max-width:340px;
+margin-top:20px
+}
+
+.input{
+width:100%;
+padding:14px;
+border-radius:12px;
+border:2px solid #000;
+background:#fff;
+color:#000;
+font-weight:700;
+margin-bottom:12px
+}
+
+.loginBtn{
+width:100%;
+padding:14px;
+border-radius:12px;
+border:2px solid #FFD700;
+background:#000;
+color:#FFD700;
+font-weight:900;
+font-size:16px
+}
+
+#mainTool{
+display:none;
+flex-direction:column;
+background:#FFD700;
+min-height:100vh;
+color:#000
+}
+
+.topbar{
+display:flex;
+justify-content:space-between;
+padding:10px 12px;
+background:#000;
+color:#FFD700;
+font-size:10px;
+font-weight:700;
+align-items:center;
+flex-wrap:wrap;
+gap:6px
+}
+
+select{
+padding:8px 10px;
+border-radius:8px;
+border:2px solid #000;
+background:#FFD700;
+color:#000;
+font-weight:900;
+min-width:170px
+}
+
+.card{
+background:linear-gradient(180deg,#ffef9c,#d4af37);
+border:2px solid #000;
+border-radius:16px;
+margin:10px;
+padding:14px
+}
+
+.big-digit{
+font-size:68px;
+font-weight:900;
+text-align:center;
+margin:6px 0
+}
+
+.row{
+display:flex;
+justify-content:space-between;
+font-size:12px;
+padding:7px 0;
+border-bottom:1px solid rgba(0,0,0,.15)
+}
+
+.badge{
+padding:4px 12px;
+border-radius:20px;
+background:#000;
+color:#FFD700;
+font-size:11px;
+font-weight:800
+}
+
+.progress{
+height:10px;
+background:#000;
+border-radius:10px;
+overflow:hidden;
+margin:12px 0
+}
+
+.progress-fill{
+height:100%;
+background:#000;
+width:0%;
+transition:width .4s
+}
+
+.controls{
+display:flex;
+gap:8px
+}
+
+.btn{
+flex:1;
+padding:12px;
+border-radius:12px;
+border:2px solid #000;
+font-weight:900;
+cursor:pointer;
+font-size:11px
+}
+
+.btn.matches{
+background:#000;
+color:#FFD700
+}
+
+.btn.differs{
+background:#fff;
+color:#000
+}
+
+.btn.signal{
+background:#000;
+color:#FFD700
+}
+
+
+/* =========================================================
+   DIGIT FREQUENCY BARS
+   ========================================================= */
+.frequency-card{
+overflow-x:auto;
+background:linear-gradient(180deg,#0d0d0d,#000);
+border:2px solid #FFD700;
+border-radius:16px;
+margin:10px;
+padding:14px;
+color:#fff
+}
+.frequency-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+font-weight:900;
+font-size:12px;
+margin-bottom:8px
+}
+.frequency-sub{
+font-size:10px;
+color:#d8d8d8
+}
+.frequency-bars{
+display:grid;
+grid-template-columns:repeat(10,minmax(30px,1fr));
+gap:5px;
+min-width:350px;
+align-items:end;
+height:156px;
+padding:8px 4px 0;
+background:linear-gradient(180deg,#161616,#050505);
+border-radius:12px;
+border:1px solid rgba(255,215,0,.45)
+}
+.freq-col{
+height:100%;
+min-width:0;
+display:flex;
+flex-direction:column;
+justify-content:flex-end;
+align-items:center
+}
+.freq-track{
+width:100%;
+height:112px;
+background:#1d1d1d;
+border-radius:5px 5px 3px 3px;
+overflow:hidden;
+display:flex;
+align-items:flex-end;
+justify-content:center;
+box-shadow:inset 0 0 0 1px rgba(255,215,0,.10)
+}
+.freq-fill{
+width:72%;
+min-height:2px;
+background:linear-gradient(180deg,#ff6a00,#ffb000);
+border-radius:4px 4px 0 0;
+transition:height .35s ease
+}
+.freq-count{
+font-size:9px;
+font-weight:900;
+color:#fff;
+margin-top:4px;
+min-height:11px
+}
+.freq-digit{
+font-size:10px;
+font-weight:900;
+color:#FFD700;
+margin-top:3px
+}
+.freq-col.last .freq-fill{
+background:linear-gradient(180deg,#ff2d2d,#ff8a00)
+}
+.freq-col.last .freq-digit{
+color:#fff;
+background:#ff2d2d;
+padding:1px 5px;
+border-radius:8px
+}
+.freq-rank{
+font-size:8px;
+margin-top:2px;
+min-height:9px;
+color:#aaa
+}
+.frequency-legend{
+display:flex;
+flex-wrap:wrap;
+gap:9px 14px;
+margin-top:9px;
+font-size:9px;
+font-weight:900;
+color:#ddd
+}
+.frequency-legend span{
+display:inline-flex;
+align-items:center;
+gap:4px
+}
+.freq-dot{
+width:8px;
+height:8px;
+border-radius:2px;
+display:inline-block
+}
+.freq-dot.most{background:#ff6a00}
+.freq-dot.normal{background:#a0a0a0}
+.freq-dot.least{background:#2a2a2a;border:1px solid #777}
+.freq-dot.last{background:#ff2d2d}
+.frequency-summary{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:8px;
+margin-top:10px
+}
+.frequency-summary .mini{
+background:#111;
+border:1px solid rgba(255,215,0,.35);
+border-radius:10px;
+padding:8px;
+text-align:center
+}
+.frequency-summary .mini b{
+display:block;
+font-size:15px;
+color:#FFD700;
+margin-top:3px
+}
+@media(max-width:520px){
+.frequency-card{padding:10px;overflow-x:auto}
+.frequency-bars{gap:3px;height:138px;min-width:350px}
+.freq-track{height:100px}
+.freq-count{font-size:8px}
+.freq-digit{font-size:9px}
+}
+
+
+/* MARKET MOVEMENT / DOMINATION */
+.movement-card{background:linear-gradient(180deg,#080808,#000);border:2px solid #FFD700;border-radius:16px;margin:10px;padding:14px;color:#fff}
+.movement-header{display:flex;justify-content:space-between;align-items:center;gap:8px;font-weight:900;font-size:12px;flex-wrap:wrap}
+.movement-sub{font-size:9px;color:#ccc}
+.movement-main{display:grid;grid-template-columns:1.15fr .85fr;gap:10px;margin-top:10px}
+.movement-signal{background:linear-gradient(180deg,#151515,#090909);border:1px solid rgba(255,215,0,.55);border-radius:12px;padding:12px;text-align:center}
+.movement-label{font-size:9px;font-weight:900;color:#bbb;letter-spacing:.5px}
+.movement-zone{font-size:25px;font-weight:900;color:#FFD700;margin-top:5px}
+.movement-direction{font-size:15px;font-weight:900;margin-top:4px}
+.movement-strength{font-size:10px;color:#fff;margin-top:5px}
+.zone-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}
+.zone-box{background:#111;border:1px solid #333;border-radius:10px;padding:9px 7px;text-align:center}
+.zone-box.active{border-color:#FFD700;box-shadow:0 0 12px rgba(255,215,0,.18)}
+.zone-name{font-size:9px;font-weight:900;color:#bbb}
+.zone-range{font-size:8px;color:#777;margin-top:2px}
+.zone-pct{font-size:18px;font-weight:900;color:#FFD700;margin-top:4px}
+.zone-count{font-size:8px;color:#aaa;margin-top:2px}
+.movement-detail{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:8px}
+.movement-mini{background:#0f0f0f;border:1px solid rgba(255,215,0,.25);border-radius:9px;padding:7px;text-align:center}
+.movement-mini span{display:block;font-size:8px;color:#aaa}
+.movement-mini b{display:block;font-size:12px;color:#fff;margin-top:3px}
+.movement-note{font-size:8px;color:#999;text-align:center;margin-top:8px}
+@media(max-width:520px){.movement-main{grid-template-columns:1fr}.zone-grid,.movement-detail{gap:5px}}
+
+.live-table{
+width:100%;
+border-collapse:collapse;
+font-size:11px
+}
+
+.live-table th{
+background:#000;
+color:#FFD700;
+padding:6px
+}
+
+.live-table td{
+padding:6px;
+border-bottom:1px solid rgba(0,0,0,.15)
+}
+
+#popupOverlay{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.75);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:9999
+}
+
+#popupBox{
+background:linear-gradient(180deg,#001a4d,#000d26);
+border:3px solid #FFD700;
+border-radius:18px;
+padding:22px;
+text-align:center;
+min-width:240px;
+box-shadow:0 0 30px rgba(255,215,0,.9);
+animation:pop .4s ease
+}
+
+@keyframes pop{
+0%{
+transform:scale(.5);
+opacity:0
+}
+100%{
+transform:scale(1);
+opacity:1
+}
+}
+
+.popup-digit{
+font-size:60px;
+font-weight:900;
+color:#FFD700;
+margin:8px 0;
+text-shadow:0 0 15px #FFD700
+}
+
+.popup-conf{
+font-size:13px;
+color:#fff;
+margin-bottom:10px
+}
+
+.popup-btn{
+padding:10px 20px;
+border-radius:10px;
+border:2px solid #FFD700;
+background:#FFD700;
+color:#000;
+font-weight:900;
+cursor:pointer
+}
+
+.popup-close{
+padding:8px 16px;
+border-radius:8px;
+border:1px solid #fff;
+background:transparent;
+color:#fff;
+margin-left:6px
+}
+
+/* =========================================================
+   HOT 4 NEXT-TICK SIGNAL + EVENT-DRIVEN PERFORMANCE
+   ========================================================= */
+.hot4-card{background:linear-gradient(180deg,#001a4d,#000d26);color:#fff;border:2px solid #FFD700;border-radius:16px;margin:10px;padding:14px}
+.hot4-header{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;color:#FFD700;font-weight:900}
+.hot4-sub{font-size:9px;color:#ffef9c;font-weight:700}
+.hot4-main{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.hot4-panel{border:1px solid rgba(255,215,0,.45);border-radius:10px;padding:10px;background:rgba(255,255,255,.04)}
+.hot4-label{font-size:9px;color:#aaa;font-weight:900;letter-spacing:.3px}
+.hot4-value{margin-top:5px;font-size:20px;font-weight:900;color:#FFD700}
+.hot4-candidates{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
+.hot4-digit-box{text-align:center;padding:9px 4px;border-radius:9px;border:1px solid #FFD700;background:#000}
+.hot4-digit{font-size:24px;font-weight:900;color:#FFD700}
+.hot4-score{font-size:9px;color:#fff;margin-top:2px}
+.hot4-result{margin-top:9px;padding:9px;border-radius:9px;text-align:center;font-weight:900;background:rgba(255,255,255,.06)}
+.hot4-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
+.hot4-stat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:9px;padding:8px;text-align:center}
+.hot4-stat span{display:block;font-size:8px;color:#aaa}
+.hot4-stat b{display:block;margin-top:3px;font-size:15px;color:#FFD700}
+.hot4-table-wrap{margin-top:10px;overflow-x:auto}
+.hot4-table{width:100%;border-collapse:collapse;min-width:640px;font-size:9px}
+.hot4-table th{background:#000;color:#FFD700;padding:5px;text-align:left}
+.hot4-table td{padding:5px;border-bottom:1px solid rgba(255,255,255,.08);color:#fff}
+.hot4-hit{color:#00ff88!important;font-weight:900}
+.hot4-miss{color:#ff7777!important;font-weight:900}
+.hot4-note{margin-top:8px;font-size:8px;line-height:1.4;color:#aaa;text-align:center}
+.hot4-compare{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px}
+.hot4-compare-box{background:#090909;border:1px solid rgba(255,215,0,.4);border-radius:10px;padding:10px;text-align:center}
+.hot4-compare-box span{display:block;font-size:8px;color:#aaa}
+.hot4-compare-box b{display:block;font-size:18px;color:#FFD700;margin-top:3px}
+.hot4-compare-detail{font-size:9px;color:#ddd;margin-top:4px}
+@media(max-width:560px){.hot4-main{grid-template-columns:1fr}.hot4-stats{grid-template-columns:repeat(2,1fr)}}
+
+</style>
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+</head>
+
+<body>
+<!-- SCANNER -> EXECUTOR P2P SIGNAL LINK -->
+<div id="signalLinkPanel" style="margin:10px;padding:12px;border:1px solid rgba(0,255,180,.55);border-radius:12px;background:#050505;color:#fff;font-family:Arial,sans-serif">
+  <div style="font-weight:800;color:#00ffb3;margin-bottom:8px">SCANNER → EXECUTOR SIGNAL LINK</div>
+  <div style="font-size:13px;margin-bottom:7px">Default direct link (the executor connects automatically):</div>
+  <div id="signalPeerId" style="padding:9px;background:#111;border-radius:8px;font-weight:800;word-break:break-all">digitscope-ai-scanner-v1</div>
+  <div id="signalPeerStatus" style="margin-top:7px;color:#ffd700">Connecting signal service...</div>
+</div>
+
+
+<div id="loginPage">
+
+<div class="logo">
+👑 DigitScope<span>AI</span>
+</div>
+
+<div style="color:#ffef9c;font-size:11px;margin-top:6px">
+ALL MARKETS EDITION + POPUP
+</div>
+
+<div class="loginBox">
+
+<input
+id="username"
+class="input"
+placeholder="Username"
+value="admin"
+>
+
+<input
+id="password"
+type="password"
+class="input"
+placeholder="Password"
+value="1234"
+>
+
+<button
+class="loginBtn"
+onclick="login()"
+>
+LOGIN
+</button>
+
+<div style="font-size:10px;color:#000;text-align:center;margin-top:8px">
+Default admin / 1234
+</div>
+
+</div>
+</div>
+
+
+<div id="popupOverlay">
+
+<div id="popupBox">
+
+<div style="color:#ffef9c;font-size:11px">
+PREDICTION
+</div>
+
+<div class="popup-digit" id="popupDigit">
+9
+</div>
+
+<div class="popup-conf">
+Confidence:
+<span id="popupConf">79%</span>
+</div>
+
+<div style="font-size:10px;color:#ffef9c;margin-bottom:12px">
+MATCHES • <span id="popupMarket">R_100</span>
+</div>
+
+<button
+class="popup-btn"
+onclick="closePopup()"
+>
+TRADE MATCHES
+</button>
+
+<button
+class="popup-close"
+onclick="closePopup()"
+>
+Close
+</button>
+
+<div style="font-size:9px;color:#aaa;margin-top:8px">
+Auto closes in <span id="popupTimer">5</span>s
+</div>
+
+</div>
+</div>
+
+
+<div id="mainTool">
+
+<div class="topbar">
+
+<div>
+<b>DigitScopeAI</b> |
+<span id="marketInfo">R_100</span> |
+<span id="wsStatus">Disconnected</span>
+</div>
+
+<div style="display:flex;gap:6px;align-items:center">
+
+<select
+id="marketSelect"
+onchange="changeMarket(this.value)"
+>
+
+<option value="R_10">Volatility 10 Index</option>
+<option value="R_25">Volatility 25 Index</option>
+<option value="R_50">Volatility 50 Index</option>
+<option value="R_75">Volatility 75 Index</option>
+<option value="R_100" selected>Volatility 100 Index</option>
+<option value="R_10_1s">Volatility 10 (1s)</option>
+<option value="R_25_1s">Volatility 25 (1s)</option>
+<option value="R_50_1s">Volatility 50 (1s)</option>
+<option value="R_75_1s">Volatility 75 (1s)</option>
+<option value="R_100_1s">Volatility 100 (1s)</option>
+<option value="1HZ10V">Vol 10 (1s) - 1HZ10V</option>
+<option value="1HZ25V">Vol 25 (1s) - 1HZ25V</option>
+<option value="1HZ50V">Vol 50 (1s) - 1HZ50V</option>
+<option value="1HZ75V">Vol 75 (1s) - 1HZ75V</option>
+<option value="1HZ100V">Vol 100 (1s) - 1HZ100V</option>
+<option value="BOOM500">Boom 500 Index</option>
+<option value="BOOM1000">Boom 1000 Index</option>
+<option value="CRASH500">Crash 500 Index</option>
+<option value="CRASH1000">Crash 1000 Index</option>
+<option value="JD10">Jump 10 Index</option>
+<option value="JD25">Jump 25 Index</option>
+<option value="JD50">Jump 50 Index</option>
+<option value="JD75">Jump 75 Index</option>
+<option value="JD100">Jump 100 Index</option>
+
+</select>
+
+<button
+onclick="logout()"
+style="padding:6px 10px;border-radius:8px;background:#000;color:#FFD700;border:1px solid #FFD700;font-weight:700"
+>
+Logout
+</button>
+
+</div>
+</div>
+
+
+<!-- 500-TICK HISTORY LOADER (top of the tool, used by the scanner and the Scan Digit module) -->
+<div style="margin:10px;padding:10px;border:1px solid rgba(255,215,0,.6);border-radius:12px;background:#000">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+    <div class="hot4-label" style="color:#FFD700">📥 500-TICK HISTORY LOADER</div>
+    <div class="hot4-label" id="hot4LoadCount" style="color:#FFD700">0 / 500</div>
+  </div>
+  <div style="height:8px;background:#222;border-radius:8px;overflow:hidden;margin-top:6px">
+    <div id="hot4LoadBar" style="height:100%;width:0%;background:#FFD700;transition:width .3s"></div>
+  </div>
+  <div id="hot4LoadStatus" style="font-size:10px;color:#ffef9c;margin-top:5px;text-align:center">
+    Loading historical ticks...
+  </div>
+  <button onclick="loadHistoricalScan(currentMarket)" style="margin-top:6px;width:100%;padding:8px;border-radius:8px;border:1px solid #FFD700;background:#000;color:#FFD700;font-weight:900;font-size:11px;cursor:pointer">LOAD 500 TICKS NOW</button>
+</div>
+
+<!-- EXISTING LAST DIGIT CARD -->
+
+<div class="card">
+
+<div style="font-weight:900;display:flex;justify-content:space-between">
+
+<span>
+💛 LAST DIGIT -
+<span id="curMarket">R_100</span>
+</span>
+
+<span id="tickCount">
+Ticks: 0
+</span>
+
+</div>
+
+<div class="big-digit" id="ld">
+-
+</div>
+
+<div style="text-align:center;font-size:11px">
+Quote:
+<span id="quote">-</span>
+</div>
+
+<div class="row">
+<span>FREQUENCY (LAST 10)</span>
+<b id="freq">0%</b>
+</div>
+
+<div class="row">
+<span>TREND STATUS</span>
+<span class="badge" id="trend">WAITING</span>
+</div>
+
+<div class="row">
+<span>PREDICTION</span>
+<b id="pred">-</b>
+</div>
+
+<div class="progress">
+<div class="progress-fill" id="bar"></div>
+</div>
+
+<div
+id="alertBox"
+style="padding:8px;background:rgba(0,0,0,.15);border-radius:8px;text-align:center;font-size:12px;font-weight:700"
+>
+Connecting... wait 3 sec
+</div>
+
+<div
+id="matchesSignal"
+style="background:#00aa00;color:#fff;padding:10px;border-radius:10px;text-align:center;font-weight:900;margin-top:8px;display:none"
+>
+MATCHES signal
+</div>
+
+<div
+id="debug"
+style="font-size:10px;background:#000;color:#0f0;padding:6px;border-radius:6px;margin-top:6px;font-family:monospace;max-height:70px;overflow:auto"
+>
+Debug log...
+</div>
+
+</div>
+
+
+
+<!-- DIGIT FREQUENCY BARS -->
+<div class="frequency-card">
+  <div class="frequency-header">
+    <span>📊 DIGIT FREQUENCY</span>
+    <span class="frequency-sub">LIVE • LAST 10 TICKS</span>
+  </div>
+
+  <div class="frequency-bars" id="frequencyBars"></div>
+  <div style="display:grid;grid-template-columns:repeat(10,minmax(30px,1fr));gap:5px;min-width:350px;margin-top:5px;text-align:center;font-size:10px;font-weight:900;color:#FFD700">
+    <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span>
+  </div>
+
+  <div class="frequency-legend">
+    <span><i class="freq-dot most"></i>MOST FREQUENT</span>
+    <span><i class="freq-dot normal"></i>NORMAL</span>
+    <span><i class="freq-dot least"></i>LEAST FREQUENT</span>
+    <span><i class="freq-dot last"></i>LAST TICK</span>
+  </div>
+
+  <div class="frequency-summary">
+    <div class="mini">MOST FREQUENT DIGIT<b id="freqTop">-</b></div>
+    <div class="mini">LAST TICK<b id="freqLast">-</b></div>
+  </div>
+</div>
+
+
+
+<!-- MARKET MOVEMENT / DOMINATION -->
+<div class="movement-card">
+  <div class="movement-header">
+    <span>⚡ MARKET MOVEMENT &amp; DOMINATION</span>
+    <span class="movement-sub">DESCRIPTIVE • LAST 20 TICKS</span>
+  </div>
+  <div class="movement-main">
+    <div class="movement-signal">
+      <div class="movement-label">STRONG DOMINATION</div>
+      <div class="movement-zone" id="movementZone">WAITING</div>
+      <div class="movement-direction" id="movementDirection">—</div>
+      <div class="movement-strength" id="movementStrength">Collecting ticks...</div>
+    </div>
+    <div class="movement-signal">
+      <div class="movement-label">STRONG MARKET MOVEMENT</div>
+      <div class="movement-direction" id="movementBias">—</div>
+      <div class="movement-strength" id="movementBiasDetail">Need 20 ticks</div>
+    </div>
+  </div>
+  <div class="zone-grid">
+    <div class="zone-box" id="zoneLower"><div class="zone-name">LOWER</div><div class="zone-range">0–5</div><div class="zone-pct" id="lowerPct">0%</div><div class="zone-count" id="lowerCount">0 / 20</div></div>
+    <div class="zone-box" id="zoneMiddle"><div class="zone-name">MIDDLE</div><div class="zone-range">3–7</div><div class="zone-pct" id="middlePct">0%</div><div class="zone-count" id="middleCount">0 / 20</div></div>
+    <div class="zone-box" id="zoneUpper"><div class="zone-name">UPPER</div><div class="zone-range">5–9</div><div class="zone-pct" id="upperPct">0%</div><div class="zone-count" id="upperCount">0 / 20</div></div>
+    <div style="grid-column:1/-1;font-size:9px;text-align:center;opacity:.75;margin-top:4px">LOWER 0–5 • MIDDLE 3–7 • UPPER 5–9 • ranges overlap by design</div>
+  </div>
+  <div class="movement-detail">
+    <div class="movement-mini"><span>RECENT 10 AVG</span><b id="recentAvg">—</b></div>
+    <div class="movement-mini"><span>PREVIOUS 10 AVG</span><b id="previousAvg">—</b></div>
+    <div class="movement-mini"><span>SHIFT</span><b id="movementShift">—</b></div>
+  </div>
+  <div class="movement-note">Only strong conditions are signaled. Small directional changes are intentionally hidden.</div>
+</div>
+
+<!-- MESH (TRANSITION) SCANNER -->
+<div class="hot4-card">
+  <div class="hot4-header">
+    <span>🕸️ MESH SCANNER — BUCKETS OF 100</span>
+    <span class="hot4-sub">WINNER STAYS UNLESS ANOTHER DIGIT IS 3+ AHEAD</span>
+  </div>
+
+  <button id="scanBtn" onclick="toggleScanner()" style="margin-top:10px;width:100%;padding:12px;border-radius:10px;border:2px solid #FFD700;background:#FFD700;color:#000;font-weight:900;font-size:13px;cursor:pointer">
+    START SCANNER
+  </button>
+
+  <div class="hot4-label" style="margin-top:10px">PREDICTION FOR THE NEXT TICK (MOST LIKELY NEXT)</div>
+  <div class="hot4-candidates" id="scannerDigits" style="grid-template-columns:1fr"></div>
+
+  <div class="hot4-result" id="scannerStatus">Scanner is off.</div>
+  <div id="matchesAuto" style="margin-top:6px;padding:8px;border-radius:9px;text-align:center;font-size:11px;font-weight:900;background:rgba(255,255,255,.04);color:#aaa;border:1px solid rgba(255,255,255,.12)">MATCHES digit: not selected (scanner off)</div>
+  <div id="scannerGate" style="text-align:center;font-size:9px;color:#aaa;margin-top:5px">—</div>
+  <div class="hot4-result" id="scannerLast" style="margin-top:6px;background:rgba(255,255,255,.03);font-size:11px">Last result: —</div>
+
+  <div class="hot4-stats">
+    <div class="hot4-stat"><span>RESOLVED</span><b id="scanStatN">0</b></div>
+    <div class="hot4-stat"><span>MATCHES</span><b id="scanStatHit">0</b></div>
+    <div class="hot4-stat"><span>HIT RATE</span><b id="scanStatRate">0%</b></div>
+    <div class="hot4-stat"><span>LOCK SWITCHES</span><b id="scanStatChg">0</b></div>
+  </div>
+
+  <div class="hot4-label" style="margin-top:10px">MESH — TAP A DIGIT TO SEE WHAT FOLLOWS IT</div>
+  <svg id="meshSvg" viewBox="0 0 340 340" style="width:100%;max-width:360px;display:block;margin:6px auto 0;background:#050a14;border:1px solid rgba(255,215,0,.35);border-radius:12px"></svg>
+  <div style="font-size:8px;color:#aaa;text-align:center;margin-top:4px;line-height:1.5">
+    Node = digit (size and % = share of the last 200 ticks, count under it) • Line = how often the first digit was followed by the second (bucket counts) •
+    <span style="color:#FFD700">gold</span> = selected digit's transitions • <span style="color:#ff6b6b">red</span> = latest transition •
+    <span style="color:#00ff88">green</span> = predicted next digit
+  </div>
+
+  <div class="hot4-label" style="margin-top:10px" id="afterTitle">AFTER — → NEXT</div>
+  <div class="hot4-table-wrap">
+    <table class="hot4-table" style="min-width:0">
+      <thead><tr><th>Next digit</th><th>Count</th><th>Share</th><th></th></tr></thead>
+      <tbody id="afterBoard"><tr><td colspan="4" style="text-align:center;color:#aaa">Start the scanner.</td></tr></tbody>
+    </table>
+  </div>
+
+  <div class="hot4-label" style="margin-top:10px">LOCKED PICK PER DIGIT — HELD UNTIL THAT DIGIT APPEARS AGAIN</div>
+  <div id="nodeBoard" style="display:grid;grid-template-columns:repeat(10,1fr);gap:3px;margin-top:6px"></div>
+
+  <div class="hot4-label" style="margin-top:10px">RESOLVED PREDICTIONS</div>
+  <div class="hot4-table-wrap">
+    <table class="hot4-table" style="min-width:0">
+      <thead><tr><th>#</th><th>Time</th><th>Predicted</th><th>Actual</th><th>Result</th></tr></thead>
+      <tbody id="scanHistoryBody"><tr><td colspan="5" style="text-align:center;color:#aaa">No resolved predictions yet.</td></tr></tbody>
+    </table>
+  </div>
+
+  <div class="hot4-note">
+    Every digit X has a bucket holding the digits that came right after its last 100 occurrences. Each tick, the new digit is added to the bucket of the digit before it (the oldest item drops out when the bucket is full) and the counts are updated.
+    The bucket's winner changes only if another digit's count is more than 2 higher than the current winner's count (3 or more ahead); otherwise the old winner stays. For example, with 6:30 and 7:28, a new 7 makes it 6:30, 7:29 and the winner stays 6.
+    The mesh above is drawn from the same buckets the prediction uses: the green arrow is the winner of the last digit's bucket. The prediction for the next tick is that winner, and every tick records the previous prediction as a match or miss. The 500 history ticks are fetched in one request, so each bucket starts with about 50 items and grows to 100 as live ticks arrive.
+    A single digit is ~10% likely on every tick, so the match rate averages about 10% however the buckets are counted.
+  </div>
+</div>
+
+<!-- SCAN DIGIT CARD -->
+
+<div class="card">
+
+<div style="font-weight:900">
+🔎 SCAN DIGIT
+</div>
+
+<div class="row">
+<span>HISTORY</span>
+<b id="scanHistoryCount">0 / 500</b>
+</div>
+
+<div class="row">
+<span>MOST INCREASING DIGIT</span>
+<b id="mostIncreasingDigit">-</b>
+</div>
+
+<div class="row">
+<span>LAST 5 TICKS</span>
+<b id="scanLast5">-</b>
+</div>
+
+<div style="text-align:center;margin-top:8px">
+
+<div style="font-size:11px;font-weight:900">
+FILTERED SCAN DIGIT
+</div>
+
+<div class="big-digit" id="scanDigit">
+-
+</div>
+
+</div>
+
+</div>
+
+
+<!-- TRADING CONTROLS -->
+
+<div class="card">
+
+<div style="font-weight:900">
+🎯 Trading Controls
+</div>
+
+<div class="controls" style="margin-top:8px">
+
+<button class="btn matches" onclick="manualPopup()">MATCHES</button>
+<button class="btn differs" onclick="closePopup()">DIFFERS</button>
+<button class="btn signal" onclick="manualPopup()">SIGNAL</button>
+
+</div>
+
+<div style="text-align:center;font-size:12px;margin-top:8px">
+Next MATCHES popup in
+<b id="timer">OFF</b> |
+Mode:
+<span id="mode">LIVE</span>
+</div>
+
+</div>
+
+
+<!-- LIVE TICKS -->
+
+<div class="card">
+
+<div style="font-weight:900">
+📡 LIVE TICKS LOG
+</div>
+
+<table class="live-table">
+
+<tr>
+<th>Time</th>
+<th>Market</th>
+<th>Quote</th>
+<th>Digit</th>
+</tr>
+
+<tbody id="live">
+
+<tr>
+<td colspan="4" style="text-align:center">
+Waiting for first tick...
+</td>
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+
+<!-- PATTERN ANALYSIS -->
+
+<div class="card">
+
+<div style="font-weight:900">
+📊 PATTERN ANALYSIS
+</div>
+
+<div class="row">
+<span>PATTERN STRENGTH</span>
+<b id="ps">0%</b>
+</div>
+
+<div style="text-align:center">
+
+<div class="big-digit" style="font-size:36px" id="next">
+-
+</div>
+
+<div class="progress">
+<div class="progress-fill" id="confBar"></div>
+</div>
+
+<div>
+Confidence:
+<span id="conf">0%</span>
+|
+Market:
+<span id="confMarket">R_100</span>
+</div>
+
+</div>
+
+</div>
+
+
+<!-- STATUS -->
+
+<div class="card">
+
+<div style="font-weight:900">
+⚡ Status
+</div>
+
+<div
+class="badge"
+style="display:block;text-align:center;padding:12px"
+id="connected"
+>
+Not connected
+</div>
+
+<button
+onclick="forceDemo()"
+style="margin-top:8px;width:100%;padding:10px;border-radius:8px;background:#fff;border:2px solid #000;font-weight:900"
+>
+If not moving click Force Demo
+</button>
+
+</div>
+
+</div>
+
+
+<script>
+
+const VALID_USER="admin";
+const VALID_PASS="1234";
+
+/* EXACT LIVE CONNECTION FROM YOUR WORKING FILE */
+
+const DERIV_WS=
+"wss://api.derivws.com/trading/v1/options/ws/public";
+
+
+function login(){
+  document.getElementById('loginPage').style.display='none';
+  document.getElementById('mainTool').style.display='flex';
+
+  startLive();
+
+}
+
+
+function logout(){
+
+  location.reload();
+
+}
+
+
+let ws=null;
+let reconnectTimer=null;
+
+
+/* =========================================================
+   500-TICK HISTORY LOADER
+   ========================================================= */
+
+let historyWs=null;
+let hot4HistoryTimeout=null;
+let hot4Retried=false;
+
+/* History uses the same current public WebSocket as the live tick feed. */
+const HISTORY_WS=null;
+
+const HISTORY_SYMBOL_MAP={
+R_10_1s:"1HZ10V",
+R_25_1s:"1HZ25V",
+R_50_1s:"1HZ50V",
+R_75_1s:"1HZ75V",
+R_100_1s:"1HZ100V"
+};
+
+
+/* =========================================================
+   DIGITS
+   ========================================================= */
+
+let digits=[];
+let last10=[];
+
+
+/* =========================================================
+   500-TICK SCAN HISTORY
+   ========================================================= */
+
+let scanHistory=[];
+
+const SCAN_HISTORY_SIZE=500;
+const SCAN_SPLIT=250;
+
+let scanHistoryReady=false;
+
+let hot4History=[];
+let hot4HistoryReady=false;
+const HOT4_HISTORY_SIZE=500;    // loaded in ONE request, so the loader fills instantly
+
+let currentMarket='R_100';
+let pipSizeByMarket={};
+let tickCount=0;
+let wsConnected=false;
+let autoClose;
+let demoInterval=null;
+
+
+let $=id=>document.getElementById(id);
+
+setTimeout(()=>updateFrequencyBars(),0);
+
+
+function log(m){
+
+$('debug').innerHTML=
+new Date().toLocaleTimeString()+
+' '+
+m+
+'<br>'+
+$('debug').innerHTML;
+
+}
+
+
+
+function setHot4Loader(loaded,status){
+  const n=Math.max(0,Math.min(HOT4_HISTORY_SIZE,Number(loaded)||0));
+  if($('hot4LoadCount')) $('hot4LoadCount').textContent=n+' / '+HOT4_HISTORY_SIZE;
+  if($('hot4LoadBar')) $('hot4LoadBar').style.width=(n/HOT4_HISTORY_SIZE*100)+'%';
+  if($('hot4LoadStatus')) $('hot4LoadStatus').textContent=status;
+}
+
+function digitFromHistoryQuote(q,market){
+  const pip=Number(pipSizeByMarket[market]);
+  if(Number.isFinite(pip)&&pip>=0&&pip<=10){
+    const fixed=Number(q).toFixed(pip);
+    return parseInt(fixed.slice(-1),10);
+  }
+
+  /* Last-resort fallback only if pip_size has not arrived yet. */
+  const raw=String(q);
+  const parts=raw.split('.');
+  return parseInt((parts[1]||parts[0]).slice(-1),10);
+}
+
+
+/* =========================================================
+   LOAD 500 HISTORICAL TICKS AT ONCE
+   ========================================================= */
+
+function loadHistoricalScan(market){
+
+scanHistoryReady=false;
+hot4HistoryReady=false;
+hot4History=[];
+
+if(hot4HistoryTimeout)
+  clearTimeout(hot4HistoryTimeout);
+
+setHot4Loader(0,'Requesting '+HOT4_HISTORY_SIZE+' historical ticks from Deriv...');
+
+if(!ws || !wsConnected){
+  setHot4Loader(0,'Live connection is not ready for history request');
+  log('500 HISTORY | MAIN WS NOT READY');
+  return;
+}
+
+const historyMarket=HISTORY_SYMBOL_MAP[market]||market;
+
+try{
+
+ws.send(
+JSON.stringify({
+ticks_history:historyMarket,
+end:'latest',
+count:HOT4_HISTORY_SIZE,
+style:'ticks',
+req_id:5001
+})
+);
+
+log('500-TICK HISTORY REQUEST SENT ON MAIN CONNECTION | '+historyMarket);
+
+hot4HistoryTimeout=setTimeout(()=>{
+
+if(!hot4HistoryReady){
+
+setHot4Loader(0,'History request timed out — retrying once...');
+
+log('500 HISTORY TIMEOUT | no history response in 10 seconds');
+
+if(!hot4Retried){
+  hot4Retried=true;
+  loadHistoricalScan(market);
+}else{
+  setHot4Loader(0,'History request timed out — press LOAD 500 TICKS NOW');
+}
+
+}
+
+},10000);
+
+}catch(err){
+
+setHot4Loader(0,'History request failed — see Debug log');
+
+log('500 HISTORY SEND ERROR: '+String(err));
+
+}
+
+}
+
+
+/* =========================================================
+   START LIVE
+   ========================================================= */
+
+function startLive(){
+
+log('Starting ALL markets...');
+
+connectMarket(currentMarket);
+
+/*
+   30-SECOND AUTOMATIC POPUP REMOVED.
+   Popup now appears ONLY when MATCHES or SIGNAL
+   button is pressed manually.
+*/
+
+}
+
+
+/* =========================================================
+   EXACT CONNECTION STRUCTURE FROM WORKING FILE
+   ========================================================= */
+
+function connectMarket(market){
+
+currentMarket=market;
+
+scanHistoryReady=false;
+
+if(demoInterval){
+
+clearInterval(demoInterval);
+
+demoInterval=null;
+
+}
+
+if(ws){
+
+try{
+
+ws.onclose=null;
+ws.close();
+
+}catch(e){}
+
+ws=null;
+
+}
+
+if(reconnectTimer){
+
+clearTimeout(reconnectTimer);
+
+reconnectTimer=null;
+
+}
+
+$('marketInfo').textContent=market;
+$('curMarket').textContent=market;
+$('confMarket').textContent=market;
+$('popupMarket').textContent=market;
+
+$('wsStatus').textContent='Connecting to Deriv...';
+
+$('connected').textContent='Connecting to Deriv public feed...';
+
+$('connected').style.background='#000';
+$('connected').style.color='#FFD700';
+
+$('alertBox').textContent='Opening current Deriv public market-data connection...';
+
+log('Connecting to Deriv public feed for '+market);
+
+const endpoint=DERIV_WS;
+
+try{
+
+ws=new WebSocket(endpoint);
+
+ws.onopen=()=>{
+
+wsConnected=true;
+
+log('WS OPEN - Deriv public feed');
+
+$('wsStatus').textContent='Connected '+market;
+
+$('connected').textContent='Connected to Deriv '+market;
+
+$('connected').style.background='#00aa00';
+$('connected').style.color='#fff';
+
+$('mode').textContent='LIVE REAL';
+
+$('alertBox').textContent='Deriv public feed connected — requesting '+market+'...';
+
+log('Subscribing to '+market);
+
+/* EXISTING LIVE SUBSCRIPTION */
+
+ws.send(
+JSON.stringify({
+ticks:market,
+subscribe:1
+})
+);
+
+
+/* Request 500 historical ticks on this same working WebSocket. */
+hot4Retried=false;
+loadHistoricalScan(market);
+
+};
+
+
+ws.onmessage=e=>{
+
+try{
+
+const d=JSON.parse(e.data);
+
+/* Deriv may return errors as either d.error or the newer d.errors[] format. */
+const derivError =
+  d.error?.message ||
+  (Array.isArray(d.errors) && d.errors.length
+    ? (d.errors[0].message || d.errors[0].code || 'Unknown Deriv error')
+    : null);
+
+if(derivError){
+
+  log('Deriv ERROR: '+derivError);
+
+  /* A history request error must update the loader instead of leaving it stuck. */
+  if(d.req_id===5001 || d.echo_req?.req_id===5001 || d.echo_req?.ticks_history){
+
+    if(hot4HistoryTimeout) clearTimeout(hot4HistoryTimeout);
+
+    hot4HistoryReady=false;
+
+    setHot4Loader(0,'500-tick history failed: '+derivError);
+
+    log('500 HISTORY ERROR | '+derivError);
+
+    return;
+  }
+
+  wsConnected=false;
+
+  log('Deriv ERROR: '+derivError);
+
+  $('wsStatus').textContent='Deriv Error';
+
+  $('connected').textContent='Deriv error';
+
+  $('connected').style.background='#ff4444';
+
+  $('connected').style.color='#fff';
+
+  $('alertBox').textContent='Deriv error: '+derivError;
+
+  return;
+}
+
+
+if(
+  d.msg_type==="history" &&
+  d.history &&
+  Array.isArray(d.history.prices)
+){
+
+/* One-shot 500-tick response: process it immediately. */
+if(d.req_id===5001 || d.echo_req?.req_id===5001){
+  log('500 HISTORY RESPONSE RECEIVED | prices='+d.history.prices.length);
+}
+
+const historyLoaded=[];
+const historyPip=Number(d.pip_size);
+
+if(
+Number.isFinite(historyPip) &&
+historyPip>=0 &&
+historyPip<=10
+){
+  pipSizeByMarket[currentMarket]=historyPip;
+}
+
+d.history.prices.forEach(q=>{
+
+let digit=NaN;
+
+const pip=
+Number.isFinite(historyPip) &&
+historyPip>=0 &&
+historyPip<=10
+? historyPip
+: pipSizeByMarket[currentMarket];
+
+if(
+Number.isFinite(pip) &&
+pip>=0 &&
+pip<=10
+){
+
+const fixed=Number(q).toFixed(pip);
+digit=parseInt(fixed.slice(-1),10);
+
+}else{
+
+const raw=String(q);
+const parts=raw.split('.');
+digit=parseInt((parts[1]||parts[0]).slice(-1),10);
+
+}
+
+if(
+Number.isInteger(digit) &&
+digit>=0 &&
+digit<=9
+){
+  historyLoaded.push(digit);
+}
+
+});
+
+if(historyLoaded.length>=HOT4_HISTORY_SIZE){
+
+scanHistory=historyLoaded.slice(-SCAN_HISTORY_SIZE);
+hot4History=historyLoaded.slice(-HOT4_HISTORY_SIZE);
+
+scanHistoryReady=true;
+hot4HistoryReady=true;
+
+if(hot4HistoryTimeout)
+  clearTimeout(hot4HistoryTimeout);
+
+$('scanHistoryCount').textContent=scanHistory.length+' / '+SCAN_HISTORY_SIZE;
+
+$('scanLast5').textContent=scanHistory.slice(-5).join(' ');
+
+setHot4Loader(
+hot4History.length,
+hot4History.length===HOT4_HISTORY_SIZE
+? HOT4_HISTORY_SIZE+' historical ticks loaded — ready'
+: hot4History.length+' historical ticks loaded — Hot 4 is ready'
+);
+
+updateScanDigit(null,false);
+
+try{ if(scanner.auto){ mesh=null; predictNext(); } }catch(e){}
+
+log('500 HISTORICAL TICKS LOADED | '+historyLoaded.length+' digits | '+currentMarket);
+
+}else{
+
+setHot4Loader(
+historyLoaded.length,
+'Only '+historyLoaded.length+' usable ticks received — need 500'
+);
+
+log('500 HISTORY RESPONSE | usable='+historyLoaded.length+' | market='+currentMarket);
+
+}
+
+return;
+
+}
+
+
+if(
+d.msg_type==="tick" &&
+d.tick
+){
+
+const q=String(d.tick.quote);
+
+const symbol=String(d.tick.symbol);
+
+const tickPip=Number(d.tick.pip_size);
+if(Number.isFinite(tickPip) && tickPip>=0 && tickPip<=10){
+  pipSizeByMarket[symbol]=tickPip;
+}
+
+const epoch=String(d.tick.epoch);
+
+tickCount++;
+
+$('tickCount').textContent='Ticks: '+tickCount;
+
+$('quote').textContent=q;
+
+$('wsStatus').textContent='LIVE '+symbol;
+
+$('connected').textContent='LIVE REAL TICKS — '+symbol;
+
+$('connected').style.background='#00aa00';
+
+$('connected').style.color='#fff';
+
+$('mode').textContent='LIVE REAL';
+
+$('alertBox').textContent='LIVE Deriv tick received';
+
+log('REAL TICK | symbol='+symbol+' quote='+q+' epoch='+epoch);
+
+handleReal({...d.tick, pip_size: Number.isFinite(Number(d.tick.pip_size)) ? Number(d.tick.pip_size) : pipSizeByMarket[symbol]});
+
+return;
+
+}
+
+
+log('Deriv response: '+JSON.stringify(d).slice(0,250));
+
+}catch(err){
+
+log('Invalid Deriv response');
+
+$('alertBox').textContent='Invalid Deriv server response';
+
+}
+
+};
+
+
+ws.onerror=()=>{
+
+wsConnected=false;
+
+log('Deriv WebSocket error');
+
+$('wsStatus').textContent='WebSocket Error';
+
+$('connected').textContent='Deriv WebSocket error';
+
+$('connected').style.background='#ff4444';
+
+$('connected').style.color='#fff';
+
+$('alertBox').textContent='Deriv public WebSocket error';
+
+};
+
+
+ws.onclose=()=>{
+
+wsConnected=false;
+
+log('Deriv WebSocket closed');
+
+$('wsStatus').textContent='Disconnected';
+
+$('connected').textContent='Disconnected — reconnecting...';
+
+$('connected').style.background='#000';
+
+$('connected').style.color='#FFD700';
+
+$('alertBox').textContent='Deriv disconnected — reconnecting...';
+
+reconnectTimer=setTimeout(()=>{
+
+if(currentMarket===market){
+
+connectMarket(currentMarket);
+
+}
+
+},3000);
+
+};
+
+
+}catch(err){
+
+wsConnected=false;
+
+log('Could not open Deriv WebSocket: '+String(err));
+
+$('connected').textContent='Could not open Deriv WebSocket';
+
+$('connected').style.background='#ff4444';
+
+$('connected').style.color='#fff';
+
+$('alertBox').textContent='Could not open Deriv public WebSocket';
+
+}
+
+}
+
+
+/* =========================================================
+   REAL TICK PROCESSING
+   ========================================================= */
+
+function handleReal(t){
+
+let q=String(t.quote);
+let pip=Number(t.pip_size);
+if(!Number.isFinite(pip) || pip<0 || pip>10){
+  pip=pipSizeByMarket[currentMarket];
+}
+let dig;
+
+if(Number.isFinite(pip) && pip>=0 && pip<=10){
+  const fixed=Number(t.quote).toFixed(pip);
+  dig=parseInt(fixed.slice(-1),10);
+}else{
+  const parts=q.split('.');
+  dig=parseInt((parts[1]||parts[0]).slice(-1),10);
+}
+
+if(!Number.isInteger(dig) || dig<0 || dig>9)
+return;
+
+$('quote').textContent=q;
+
+updateUI(dig,q);
+
+if(hot4HistoryReady){
+  hot4History.push(dig);
+  if(hot4History.length>HOT4_HISTORY_SIZE) hot4History.shift();
+}
+
+/* Dominance scanner: runs after the tick is in the history. */
+scannerOnTick(dig);
+
+/* Keep the existing Scan Digit module independent. */
+if(scanHistoryReady){
+  updateScanDigit(dig);
+}
+
+}
+
+/* =========================================================
+   SCAN DIGIT ENGINE
+   ========================================================= */
+
+function updateScanDigit(d,useNewTick=true){
+
+/*
+   Normal live tick:
+   add one new digit.
+
+   Historical batch:
+   analyze the existing 500
+   without adding anything.
+*/
+
+if(useNewTick){
+
+scanHistory.push(d);
+
+if(scanHistory.length>SCAN_HISTORY_SIZE){
+
+scanHistory.shift();
+
+}
+
+}
+
+
+$('scanHistoryCount').textContent=scanHistory.length+' / '+SCAN_HISTORY_SIZE;
+
+let last5=scanHistory.slice(-5);
+
+$('scanLast5').textContent=last5.length?last5.join(' '):'-';
+
+if(scanHistory.length<SCAN_HISTORY_SIZE){
+
+$('mostIncreasingDigit').textContent='-';
+
+$('scanDigit').textContent='-';
+
+$('movementZone').textContent='WAITING';
+$('movementDirection').textContent='—';
+$('movementStrength').textContent='Collecting ticks...';
+$('movementBias').textContent='—';
+$('movementBiasDetail').textContent='Need 20 ticks';
+$('lowerPct').textContent='0%';
+$('middlePct').textContent='0%';
+$('upperPct').textContent='0%';
+$('lowerCount').textContent='0 / 20';
+$('middleCount').textContent='0 / 20';
+$('upperCount').textContent='0 / 20';
+['zoneLower','zoneMiddle','zoneUpper'].forEach(id=>$(id).classList.remove('active'));
+
+return;
+
+}
+
+let older=scanHistory.slice(0,250);
+let newer=scanHistory.slice(250);
+
+let oldCount=Array(10).fill(0);
+let newCount=Array(10).fill(0);
+
+older.forEach(x=>{oldCount[x]++;});
+newer.forEach(x=>{newCount[x]++;});
+
+let increases=[];
+
+for(let i=0;i<=9;i++){
+
+increases.push({
+digit:i,
+increase:newCount[i]-oldCount[i],
+newFrequency:newCount[i]
+});
+
+}
+
+increases.sort((a,b)=>{
+
+if(b.increase!==a.increase){
+
+return b.increase-a.increase;
+
+}
+
+return b.newFrequency-a.newFrequency;
+
+});
+
+let candidate=increases[0].digit;
+
+$('mostIncreasingDigit').textContent=candidate;
+
+let appearedInLast5=last5.includes(candidate);
+
+if(appearedInLast5){
+
+$('scanDigit').textContent='-';
+
+log('SCAN FILTER | candidate='+candidate+' appeared in last 5 ticks | FILTERED');
+
+}else{
+
+$('scanDigit').textContent=candidate;
+
+log('SCAN DIGIT | candidate='+candidate+' | last5='+last5.join(' ')+' | OUTPUT='+candidate);
+
+}
+
+}
+
+
+/* =========================================================
+   EXISTING DIGITSCOPEAI ANALYSIS
+   ========================================================= */
+
+
+function updateFrequencyBars(){
+  const root=$('frequencyBars');
+  if(!root) return;
+
+  const counts=Array(10).fill(0);
+  last10.forEach(x=>{
+    const n=Number(x);
+    if(Number.isInteger(n) && n>=0 && n<=9) counts[n]++;
+  });
+
+  const total=last10.length;
+  const max=Math.max(...counts,1);
+  // Always render all ten digits (including 0), even when its count is zero.
+
+  const ranked=[...Array(10).keys()].sort((a,b)=>{
+    if(counts[b]!==counts[a]) return counts[b]-counts[a];
+    return a-b;
+  });
+  const topSet=new Set(ranked.slice(0,3));
+  const least=Math.min(...counts);
+  const lastDigit=total ? last10[total-1] : null;
+
+  root.innerHTML='';
+
+  for(let d=0; d<10; d++){
+    const col=document.createElement('div');
+    col.className='freq-col'+(d===lastDigit ? ' last':'');
+
+    const track=document.createElement('div');
+    track.className='freq-track';
+    track.title=`Digit ${d}: ${counts[d]} / ${total} ticks`;
+
+    const fill=document.createElement('div');
+    fill.className='freq-fill';
+    fill.style.height=(counts[d] ? Math.max(4,(counts[d]/max)*100) : 0)+'%';
+    if(d===0){ col.setAttribute('data-digit-zero','true'); }
+
+    track.appendChild(fill);
+
+    const count=document.createElement('div');
+    count.className='freq-count';
+    count.textContent=counts[d];
+
+    const digit=document.createElement('div');
+    digit.className='freq-digit';
+    digit.textContent=d;
+    digit.style.display='none';
+
+    const rank=document.createElement('div');
+    rank.className='freq-rank';
+    if(total){
+      if(topSet.has(d)) rank.textContent='MOST';
+      else if(counts[d]===least) rank.textContent='LEAST';
+      else rank.textContent='NORMAL';
+    }
+
+    col.appendChild(track);
+    col.appendChild(count);
+    col.appendChild(digit);
+    col.appendChild(rank);
+    root.appendChild(col);
+  }
+
+  if($('freqTop')) $('freqTop').textContent=total ? ranked[0] : '-';
+  if($('freqLast')) $('freqLast').textContent=lastDigit===null ? '-' : lastDigit;
+}
+
+
+
+/* =========================================================
+   SHARED HELPERS
+   ========================================================= */
+function hot4Counts(arr){
+  const c=Array(10).fill(0);
+  arr.forEach(x=>{const d=Number(x);if(Number.isInteger(d)&&d>=0&&d<=9)c[d]++;});
+  return c;
+}
+
+/* =========================================================
+   MESH SCANNER - buckets of 100 (Pipbox-style "AFTER X -> NEXT")
+   - bucket[X] = the digits that came right after the last 100 occurrences of X
+   - winner[X] = most frequent digit in bucket[X]; it only changes when another digit's count
+     is MORE than SWITCH_AHEAD higher than the current winner's count
+   ========================================================= */
+const BUCKET_SIZE=100;       // successors remembered per digit
+const SWITCH_AHEAD=2;        // leader.count > winner.count + 2  -> switch
+const MIN_OCC=5;             // bucket items needed before a digit gets a winner
+const MIN_TICKS=100;
+const SCANNER_MAX_ROWS=50;
+let scanner={auto:false,pending:null,n:0,hits:0,rows:[]};
+let mesh=null;
+let meshSel=null;
+let matchesPick=null;        // digit auto-selected for MATCHES from the mesh {digit,conf}            // digit tapped on the mesh (null = follow the last digit)
+
+function scanSource(){
+  return (hot4HistoryReady?hot4History:digits).map(Number);
+}
+
+function newMesh(){
+  return {
+    bucket:Array.from({length:10},()=>[]),
+    counts:Array.from({length:10},()=>Array(10).fill(0)),
+    winner:Array(10).fill(null),
+    switches:0
+  };
+}
+
+/* Leader of a count array (ties -> lowest digit). */
+function meshLeader(c){
+  let l=0;
+  for(let n=1;n<=9;n++) if(c[n]>c[l]) l=n;
+  return l;
+}
+
+/* Adds one successor to bucket X and (optionally) applies the switching rule. */
+function meshAdd(X,next,evaluate){
+  const b=mesh.bucket[X], c=mesh.counts[X];
+  b.push(next); c[next]++;
+  if(b.length>BUCKET_SIZE){ const old=b.shift(); c[old]--; }
+  if(!evaluate || b.length<MIN_OCC) return;
+  const lead=meshLeader(c);
+  const w=mesh.winner[X];
+  if(w===null){ mesh.winner[X]=lead; return; }
+  if(lead!==w && c[lead]>c[w]+SWITCH_AHEAD){   // only switch when clearly ahead
+    mesh.winner[X]=lead;
+    mesh.switches++;
+  }
+}
+
+function buildMesh(src){
+  mesh=newMesh();
+  for(let i=1;i<src.length;i++) meshAdd(src[i-1],src[i],false);
+  for(let X=0;X<=9;X++){
+    if(mesh.bucket[X].length>=MIN_OCC) mesh.winner[X]=meshLeader(mesh.counts[X]);
+  }
+}
+
+function renderMeshBoards(L){
+  if(!mesh) return;
+  const V=meshSel===null?L:meshSel;             // digit whose table is shown
+  const c=mesh.counts[V], N=mesh.bucket[V].length;
+  const lead=meshLeader(c), w=mesh.winner[V];
+
+  if($('afterTitle')) $('afterTitle').textContent='AFTER '+V+' → NEXT ('+N+' in bucket)'+(meshSel!==null?' — selected (tap it again to follow the last digit)':'');
+  const body=$('afterBoard');
+  if(body){
+    body.innerHTML='';
+    if(N>0){
+      [0,1,2,3,4,5,6,7,8,9].sort((a,b)=>c[b]-c[a]||a-b).forEach(d=>{
+        const tr=document.createElement('tr');
+        const isWin=d===w;
+        const isLead=d===lead && lead!==w;
+        const pct=Math.round(c[d]/N*100);
+        tr.innerHTML='<td'+(isWin?' style="color:#00ff88;font-weight:900"':'')+'>'+d+(isWin?' ◀ winner':(isLead?' (leader, +'+(c[d]-c[w])+' vs winner, needs 3)':''))+'</td><td>'+c[d]+'</td><td>'+pct+'%</td><td style="width:40%"><div style="height:6px;background:'+(isWin?'#00ff88':'#c0392b')+';width:'+Math.min(100,pct*2.5)+'%"></div></td>';
+        body.appendChild(tr);
+      });
+    }
+  }
+
+  const nodes=$('nodeBoard');
+  if(nodes){
+    nodes.innerHTML='';
+    for(let d=0;d<=9;d++){
+      const el=document.createElement('div');
+      const isL=d===L;
+      el.style.cssText='text-align:center;padding:4px 0;border-radius:8px;background:#000;border:1px solid '+(isL?'#ff4444':'rgba(255,255,255,.2)');
+      el.innerHTML='<div style="font-size:12px;font-weight:900;color:'+(isL?'#ff7777':'#FFD700')+'">'+d+'</div><div style="font-size:10px;color:#fff">→ '+(mesh.winner[d]===null?'-':mesh.winner[d])+'</div><div style="font-size:8px;color:#777">'+mesh.bucket[d].length+'</div>';
+      nodes.appendChild(el);
+    }
+  }
+  renderMeshSvg(L,V);
+  if($('scanStatChg')) $('scanStatChg').textContent=mesh.switches;
+}
+
+/* Auto-selects the MATCHES digit from the mesh: the winner of the bucket for the digit that just appeared. */
+function setMatchesSelection(pick,pct,L){
+  matchesPick=pick===null?null:{digit:pick,conf:pct};
+  const box=$('matchesAuto');
+  if(box){
+    if(matchesPick){
+      box.textContent='✅ MATCHES digit auto-selected from the mesh: '+pick+' ('+pct+'% of the bucket after '+L+')';
+      box.style.color='#00ff88';
+      box.style.borderColor='#00ff88';
+    }else{
+      box.textContent='MATCHES digit: not selected'+(scanner.auto?' (waiting for data)':' (scanner off)');
+      box.style.color='#aaa';
+      box.style.borderColor='rgba(255,255,255,.12)';
+    }
+  }
+  const sig=$('matchesSignal');
+  if(sig){
+    if(matchesPick){
+      sig.style.display='block';
+      sig.textContent='MATCHES: '+currentMarket+' — mesh selects digit '+pick+' ('+pct+'% of its bucket)';
+    }else{
+      sig.style.display='none';
+    }
+  }
+  // Forward from the real prediction function itself. This avoids relying on a
+  // later wrapper and preserves the scanner's own prediction calculation.
+  try{ if(typeof window.sendScannerPrediction==='function') window.sendScannerPrediction(pick,pct,L); }catch(e){}
+}
+
+/* The mesh: 10 digit nodes on a ring, lines = bucket transition counts. The scanner's prediction is read from the same buckets. */
+function renderMeshSvg(L,V){
+  const svg=$('meshSvg'); if(!svg||!mesh) return;
+  const src=scanSource();
+  const win=src.slice(-200);
+  const share=hot4Counts(win);
+  const maxShare=Math.max(...share,1);
+  const cx=170,cy=170,R=122;
+  const pos=d=>{const a=(-90+d*36)*Math.PI/180;return {x:cx+R*Math.cos(a),y:cy+R*Math.sin(a)};};
+  const rad=d=>15+13*(share[d]/maxShare);
+
+  let maxC=1;
+  for(let X=0;X<=9;X++) for(let n=0;n<=9;n++) if(X!==n) maxC=Math.max(maxC,mesh.counts[X][n]);
+
+  let out='<defs>'+
+    '<marker id="arG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#00ff88"/></marker>'+
+    '<marker id="arR" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ff6b6b"/></marker>'+
+    '</defs>';
+
+  // transition lines
+  for(let X=0;X<=9;X++){
+    const thr=Math.max(3,mesh.bucket[X].length*0.13);   // other digits: only clearly frequent transitions
+    for(let n=0;n<=9;n++){
+      if(X===n) continue;
+      const cnt=mesh.counts[X][n];
+      const selected=X===V;
+      if(selected? cnt<1 : cnt<thr) continue;
+      const a=pos(X), b=pos(n), f=cnt/maxC;
+      out+='<line x1="'+a.x.toFixed(1)+'" y1="'+a.y.toFixed(1)+'" x2="'+b.x.toFixed(1)+'" y2="'+b.y.toFixed(1)+'" stroke="'+(selected?'#FFD700':'#6f7f99')+'" stroke-opacity="'+(selected?(0.35+0.6*f):(0.12+0.3*f)).toFixed(2)+'" stroke-width="'+((selected?1:0.5)+3*f).toFixed(1)+'"/>';
+    }
+  }
+  // latest transition (previous digit -> last digit)
+  if(src.length>=2){
+    const P=src[src.length-2];
+    if(P!==L){
+      const a=pos(P), b=pos(L);
+      out+='<line x1="'+a.x.toFixed(1)+'" y1="'+a.y.toFixed(1)+'" x2="'+b.x.toFixed(1)+'" y2="'+b.y.toFixed(1)+'" stroke="#ff6b6b" stroke-width="3" marker-end="url(#arR)"/>';
+    }
+  }
+  // predicted next digit (winner of the last digit's bucket)
+  const w=mesh.winner[L];
+  if(w!==null && w!==L){
+    const a=pos(L), b=pos(w);
+    out+='<line x1="'+a.x.toFixed(1)+'" y1="'+a.y.toFixed(1)+'" x2="'+b.x.toFixed(1)+'" y2="'+b.y.toFixed(1)+'" stroke="#00ff88" stroke-width="3" stroke-dasharray="6 4" marker-end="url(#arG)"/>';
+  }
+  // nodes
+  for(let d=0;d<=9;d++){
+    const p=pos(d), r=rad(d);
+    const isL=d===L, isW=w!==null && d===w, isV=d===V;
+    const stroke=isL?'#ff4444':(isW?'#00ff88':(isV?'#FFD700':'#3a4a66'));
+    const fill=isL?'#4a1818':(isW?'#12402a':'#16233a');
+    out+='<g style="cursor:pointer" onclick="meshSelect('+d+')">'+
+      '<circle cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="'+r.toFixed(1)+'" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+((isL||isW||isV)?3:1.5)+'"/>'+
+      '<text x="'+p.x.toFixed(1)+'" y="'+(p.y+1).toFixed(1)+'" text-anchor="middle" font-size="15" font-weight="900" fill="#fff">'+d+'</text>'+
+      '<text x="'+p.x.toFixed(1)+'" y="'+(p.y+11).toFixed(1)+'" text-anchor="middle" font-size="7" fill="#c8d2e6">'+Math.round(share[d]/Math.max(1,win.length)*100)+'%</text>'+
+      '<text x="'+p.x.toFixed(1)+'" y="'+(p.y+r+9).toFixed(1)+'" text-anchor="middle" font-size="7" fill="#7f8aa0">'+share[d]+'</text>'+
+      '</g>';
+  }
+  svg.innerHTML=out;
+}
+
+function meshSelect(d){
+  meshSel=(meshSel===d)?null:d;
+  if(mesh && scanner.auto){
+    const src=scanSource();
+    renderMeshBoards(src[src.length-1]);
+  }
+}
+
+function toggleScanner(){
+  if(scanner.auto){ stopScanner(); return; }
+  scanner.auto=true;
+  scanner.pending=null;
+  mesh=null;
+  meshSel=null;
+  $('scanBtn').textContent='STOP SCANNER';
+  $('scanBtn').style.background='#ff4444';
+  $('scanBtn').style.color='#fff';
+  $('scanBtn').style.borderColor='#ff4444';
+  predictNext();
+}
+
+function stopScanner(){
+  scanner.auto=false;
+  scanner.pending=null;
+  mesh=null;
+  meshSel=null;
+  if($('meshSvg')) $('meshSvg').innerHTML='';
+  setMatchesSelection(null,0,0);
+  if($('scanBtn')){
+    $('scanBtn').textContent='START SCANNER';
+    $('scanBtn').style.background='#FFD700';
+    $('scanBtn').style.color='#000';
+    $('scanBtn').style.borderColor='#FFD700';
+  }
+  if($('scannerDigits')) $('scannerDigits').innerHTML='';
+  if($('scannerStatus')){ $('scannerStatus').textContent='Scanner is off.'; $('scannerStatus').style.color='#aaa'; }
+}
+
+function renderScanRows(){
+  const body=$('scanHistoryBody'); if(!body) return;
+  if(!scanner.rows.length){
+    body.innerHTML='<tr><td colspan="5" style="text-align:center;color:#aaa">No resolved predictions yet.</td></tr>';
+    return;
+  }
+  body.innerHTML='';
+  scanner.rows.slice().reverse().slice(0,SCANNER_MAX_ROWS).forEach(r=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML='<td>'+r.id+'</td><td>'+r.time+'</td><td><b>'+r.predicted+'</b></td><td><b>'+r.actual+'</b></td><td class="'+(r.hit?'hot4-hit':'hot4-miss')+'">'+(r.hit?'MATCH':'MISS')+'</td>';
+    body.appendChild(tr);
+  });
+}
+
+/* Shows the winner of the bucket for the digit that just appeared and arms it for the next tick. */
+function predictNext(){
+  if(!scanner.auto) return;
+  const src=scanSource();
+  if(src.length<MIN_TICKS){
+    scanner.pending=null;
+    setMatchesSelection(null,0,0);
+    $('scannerDigits').innerHTML='';
+    $('scannerStatus').textContent='Waiting for at least '+MIN_TICKS+' ticks...';
+    $('scannerStatus').style.color='#aaa';
+    return;
+  }
+  if(!mesh) buildMesh(src);
+  const L=src[src.length-1];
+  renderMeshBoards(L);
+  const pick=mesh.winner[L];
+  if(pick===null){
+    scanner.pending=null;
+    setMatchesSelection(null,0,0);
+    $('scannerDigits').innerHTML='';
+    $('scannerStatus').textContent='Bucket for '+L+' has only '+mesh.bucket[L].length+'/'+MIN_OCC+' items — watching';
+    $('scannerStatus').style.color='#aaa';
+    return;
+  }
+  scanner.pending={digit:pick};
+  const c=mesh.counts[L], N=mesh.bucket[L].length;
+  setMatchesSelection(pick,Math.round(c[pick]/N*100),L);
+  $('scannerDigits').innerHTML='<div class="hot4-digit-box"><div class="hot4-digit" style="font-size:44px">'+pick+'</div><div class="hot4-score">WINNER AFTER '+L+' • '+c[pick]+' of '+N+' ('+Math.round(c[pick]/N*100)+'%)</div></div>';
+  $('scannerStatus').textContent='PREDICTING '+pick+' for the next tick';
+  $('scannerStatus').style.color='#FFD700';
+  const lead=meshLeader(c);
+  $('scannerGate').textContent='Bucket '+L+': winner '+pick+' ('+c[pick]+')'+(lead!==pick?' • leader '+lead+' ('+c[lead]+') is '+(c[lead]-c[pick])+' ahead, needs 3':' • no challenger ahead')+' • switches so far: '+mesh.switches;
+  log('MESH SCANNER | last='+L+' | winner='+pick+' | '+c[pick]+'/'+N);
+}
+
+/* Called once per tick (after the tick has been added to the history). */
+function scannerOnTick(d){
+  if(!scanner.auto) return;
+
+  // 1) The actual digit resolves the previous prediction (match or miss).
+  if(scanner.pending){
+    const predicted=scanner.pending.digit;
+    const hit=predicted===d;
+    scanner.n++;
+    if(hit) scanner.hits++;
+    scanner.rows.push({id:scanner.n,time:new Date().toLocaleTimeString(),predicted:predicted,actual:d,hit:hit});
+    if(scanner.rows.length>500) scanner.rows=scanner.rows.slice(-500);
+    $('scanStatN').textContent=scanner.n;
+    $('scanStatHit').textContent=scanner.hits;
+    $('scanStatRate').textContent=(scanner.hits/scanner.n*100).toFixed(1)+'%';
+    $('scannerLast').textContent='Last result: '+(hit?'✅ MATCH':'❌ MISS')+' — predicted '+predicted+', actual '+d;
+    $('scannerLast').style.color=hit?'#00ff88':'#ff7777';
+    renderScanRows();
+    log('MESH SCANNER RESULT | predicted='+predicted+' actual='+d+' | '+(hit?'MATCH':'MISS'));
+  }
+
+  // 2) The new digit d is the successor of the previous digit: add it to that digit's bucket.
+  const src=scanSource();
+  if(src.length>=MIN_TICKS){
+    if(!mesh){
+      buildMesh(src);
+    }else if(src.length>=2){
+      meshAdd(src[src.length-2],d,true);
+    }
+  }
+
+  // 3) Arm the winner of the bucket for the digit that just appeared.
+  predictNext();
+}
+
+/* MARKET MOVEMENT / DOMINATION ENGINE — STRONG SIGNALS ONLY */
+function updateMarketMovement(){
+  const series=digits.slice(-20).map(Number).filter(d=>Number.isInteger(d)&&d>=0&&d<=9);
+  const recent=series.slice(-10);
+  const previous=series.slice(0,10);
+
+  if(series.length<20){
+    if($('movementZone')) $('movementZone').textContent='WAITING';
+    if($('movementDirection')) $('movementDirection').textContent='—';
+    if($('movementStrength')) $('movementStrength').textContent='Need '+(20-series.length)+' more tick'+(20-series.length===1?'':'s');
+    if($('movementBias')) $('movementBias').textContent='WAITING';
+    if($('movementBiasDetail')) $('movementBiasDetail').textContent='Strong signals activate after 20 ticks';
+    if($('recentAvg')) $('recentAvg').textContent='—';
+    if($('previousAvg')) $('previousAvg').textContent='—';
+    if($('movementShift')) $('movementShift').textContent='—';
+    ['lower','middle','upper'].forEach(z=>{
+      if($(z+'Pct')) $(z+'Pct').textContent='0%';
+      if($(z+'Count')) $(z+'Count').textContent='0 / 20';
+    });
+    ['zoneLower','zoneMiddle','zoneUpper'].forEach(id=>$(id).classList.remove('active'));
+    return;
+  }
+
+  const countZone=(arr,fn)=>arr.filter(fn).length;
+  const zones={lower:d=>d>=0&&d<=5,middle:d=>d>=3&&d<=7,upper:d=>d>=5&&d<=9};
+  const counts={lower:countZone(series,zones.lower),middle:countZone(series,zones.middle),upper:countZone(series,zones.upper)};
+  const shares={lower:counts.lower/20*100,middle:counts.middle/20*100,upper:counts.upper/20*100};
+  const ranked=Object.keys(shares).sort((a,b)=>shares[b]-shares[a]);
+  const top=ranked[0], second=ranked[1];
+  const gap=shares[top]-shares[second];
+  const zoneNames={lower:'LOWER DIGITS',middle:'MIDDLE DIGITS',upper:'UPPER DIGITS'};
+  const zoneIds={lower:'zoneLower',middle:'zoneMiddle',upper:'zoneUpper'};
+
+  ['lower','middle','upper'].forEach(z=>{
+    $(z+'Pct').textContent=Math.round(shares[z])+'%';
+    $(z+'Count').textContent=counts[z]+' / 20';
+    $(zoneIds[z]).classList.remove('active');
+  });
+
+  const avg=arr=>arr.length?arr.reduce((sum,d)=>sum+d,0)/arr.length:0;
+  const recentAvg=avg(recent), previousAvg=avg(previous), delta=recentAvg-previousAvg;
+  $('recentAvg').textContent=recentAvg.toFixed(2);
+  $('previousAvg').textContent=previousAvg.toFixed(2);
+  $('movementShift').textContent=(delta>=0?'+':'')+delta.toFixed(2);
+
+  /* Strong thresholds deliberately suppress small/noisy movements. */
+  const STRONG_DOMINATION_GAP=20;   // percentage-point lead over 2nd zone
+  const STRONG_MOVEMENT_SHIFT=1.00; // average digit shift over consecutive 10-tick windows
+  const strongDomination=gap>=STRONG_DOMINATION_GAP;
+  const strongUp=delta>=STRONG_MOVEMENT_SHIFT;
+  const strongDown=delta<=-STRONG_MOVEMENT_SHIFT;
+
+  let dominationText='NO STRONG DOMINATION';
+  let dominationDetail='Market zones are relatively mixed';
+  if(strongDomination){
+    dominationText=zoneNames[top];
+    dominationDetail='Strong concentration • '+Math.round(shares[top])+'% of last 20';
+    $(zoneIds[top]).classList.add('active');
+  }
+
+  let movementText='NO STRONG MOVEMENT';
+  let movementDetail='Small changes hidden';
+  if(strongUp){
+    movementText='STRONG UPPER MOVEMENT ↑';
+    movementDetail='Recent average is +'+delta.toFixed(2)+' above previous 10';
+  }else if(strongDown){
+    movementText='STRONG LOWER MOVEMENT ↓';
+    movementDetail='Recent average is '+delta.toFixed(2)+' below previous 10';
+  }
+
+  /* The first panel only reports strong domination. The second only reports strong movement. */
+  $('movementZone').textContent=dominationText;
+  $('movementDirection').textContent=strongDomination?'STRONG DOMINATION':'—';
+  $('movementStrength').textContent=dominationDetail;
+  $('movementBias').textContent=movementText;
+  $('movementBiasDetail').textContent=movementDetail;
+
+  /* Combined high-confidence state, without labeling ordinary moves. */
+  if(strongDomination && (strongUp || strongDown)){
+    $('movementStrength').textContent=dominationDetail+' • '+(strongUp?'strong upward movement':'strong downward movement');
+  }
+}
+
+function updateUI(d,q){
+
+digits.push(d);
+
+if(digits.length>100){
+
+digits.shift();
+
+}
+
+last10.push(d);
+
+if(last10.length>10){
+
+last10.shift();
+
+}
+
+updateFrequencyBars();
+updateMarketMovement();
+
+$('ld').textContent=d;
+
+let f=last10.filter(x=>x==d).length/10*100;
+
+$('freq').textContent=f.toFixed(1)+'%';
+
+$('bar').style.width=f+'%';
+
+let cnt={};
+
+digits.slice(-20).forEach(x=>cnt[x]=(cnt[x]||0)+1);
+
+let max=Math.max(...Object.values(cnt),0);
+
+let str=Math.round(max/20*100);
+
+$('ps').textContent=str+'%';
+
+$('conf').textContent=str+'%';
+
+$('confBar').style.width=str+'%';
+
+let most=Object.keys(cnt).reduce((a,b)=>cnt[a]>cnt[b]?a:b,'-');
+
+$('next').textContent=most;
+
+if(f>=30){
+
+$('trend').textContent='REPEATING';
+
+$('pred').textContent='MAY REPEAT';
+
+$('alertBox').textContent='⚠ '+currentMarket+' repeating '+d+' ('+f.toFixed(0)+'%)';
+
+}else if(f<=10){
+
+$('trend').textContent='NORMAL';
+
+$('pred').textContent='LIKELY CHANGES';
+
+$('alertBox').textContent=currentMarket+' expect different';
+
+}else{
+
+$('trend').textContent='NEUTRAL';
+
+$('pred').textContent='WAIT';
+
+$('alertBox').textContent='Wait for clearer signal on '+currentMarket;
+
+}
+
+let row=`<tr><td>${new Date().toLocaleTimeString()}</td><td>${currentMarket}</td><td>${q}</td><td><b>${d}</b></td></tr>`;
+
+$('live').innerHTML=row+$('live').innerHTML;
+
+if($('live').children.length>25){
+
+$('live').lastElementChild.remove();
+
+}
+
+}
+
+
+/* =========================================================
+   MARKET CHANGE
+   ========================================================= */
+
+function changeMarket(m){
+
+stopScanner();
+currentMarket=m;
+
+tickCount=0;
+
+digits=[];
+
+last10=[];
+
+scanHistory=[];
+
+scanHistoryReady=false;
+
+hot4History=[];
+hot4HistoryReady=false;
+if(hot4HistoryTimeout) clearTimeout(hot4HistoryTimeout);
+setHot4Loader(0,'Loading '+HOT4_HISTORY_SIZE+' historical ticks from Deriv...');
+
+$('scanHistoryCount').textContent='0 / 500';
+
+$('mostIncreasingDigit').textContent='-';
+
+$('scanLast5').textContent='-';
+
+$('scanDigit').textContent='-';
+
+$('live').innerHTML='<tr><td colspan="4" style="text-align:center">Switched to '+m+' - waiting tick...</td></tr>';
+
+log('Market changed to '+m);
+
+connectMarket(m);
+
+}
+
+
+/* =========================================================
+   POPUP
+   ========================================================= */
+
+function showPopup(){
+
+let digit=$('next').textContent;
+
+if(digit==='-'||digit===''){
+
+digit=Math.floor(Math.random()*10);
+
+}
+
+let conf=parseInt($('conf').textContent)||Math.floor(60+Math.random()*35);
+
+if(conf<60){
+
+conf=60+Math.floor(Math.random()*25);
+
+}
+
+if(matchesPick){ digit=matchesPick.digit; conf=matchesPick.conf; }   // mesh selection with its real bucket share
+
+$('popupDigit').textContent=digit;
+
+$('popupConf').textContent=conf+'%';
+
+$('popupMarket').textContent=currentMarket;
+
+$('popupOverlay').style.display='flex';
+
+$('matchesSignal').style.display='block';
+
+$('matchesSignal').textContent='MATCHES: '+currentMarket+' Predicting digit '+digit+' with '+conf+'% confidence';
+
+log('MANUAL POPUP '+currentMarket+' digit '+digit+' '+conf+'%');
+
+let c=5;
+
+$('popupTimer').textContent=c;
+
+if(autoClose)
+clearInterval(autoClose);
+
+autoClose=setInterval(()=>{
+
+c--;
+
+$('popupTimer').textContent=c;
+
+if(c<=0)
+closePopup();
+
+},1000);
+
+if(navigator.vibrate)
+navigator.vibrate([200,100,200]);
+
+}
+
+
+function closePopup(){
+
+$('popupOverlay').style.display='none';
+
+if(autoClose)
+clearInterval(autoClose);
+
+}
+
+
+function manualPopup(){
+
+showPopup();
+
+}
+
+
+/* =========================================================
+   DEMO MODE
+   ========================================================= */
+
+function startDemoMode(){
+
+if(demoInterval)
+clearInterval(demoInterval);
+
+$('mode').textContent='DEMO';
+
+$('wsStatus').textContent='DEMO '+currentMarket;
+
+$('connected').textContent='⚠ DEMO MODE - '+currentMarket+' simulated ticks running';
+
+$('connected').style.background='#ff9900';
+
+$('connected').style.color='#000';
+
+log('DEMO started for '+currentMarket);
+
+demoInterval=setInterval(()=>{
+
+let base=(2000+Math.random()*100).toFixed(2);
+
+let d=Math.floor(Math.random()*10);
+
+let q=base.slice(0,-1)+d;
+
+tickCount++;
+
+$('tickCount').textContent='Ticks: '+tickCount+' DEMO '+currentMarket;
+
+$('quote').textContent=q;
+
+updateUI(d,q);
+
+updateScanDigit(d);
+
+scannerOnTick(d);
+
+},1000);
+
+}
+
+
+function forceDemo(){
+
+if(reconnectTimer)
+clearTimeout(reconnectTimer);
+
+if(historyWs){
+
+try{
+
+historyWs.close();
+
+}catch(e){}
+
+historyWs=null;
+
+}
+
+if(ws){
+
+try{
+
+ws.onclose=null;
+
+ws.close();
+
+}catch(e){}
+
+}
+
+ws=null;
+
+startDemoMode();
+
+}
+
+</script>
+
+<script>
+(function(){
+  // A stable ID removes manual copy/paste pairing.  Only run one scanner tab at a time.
+  const SIGNAL_PEER_ID='digitscope-ai-scanner-v1';
+  let signalPeer=null;
+  let signalConn=null;
+  let signalReady=false;
+  let signalSeq=0;
+  let latestPrediction=null;
+  let reconnectAttempt=0;
+  let reconnectTimer=null;
+  let localSignalChannel=null;
+  try{ localSignalChannel=new BroadcastChannel('digitscope-ai-local-link-v1'); }catch(e){}
+
+  function setSignalStatus(t,color){
+    const el=document.getElementById('signalPeerStatus');
+    if(el){el.textContent=t; if(color) el.style.color=color;}
+  }
+  function setPeerId(id){
+    const el=document.getElementById('signalPeerId');
+    if(el) el.textContent=id||SIGNAL_PEER_ID;
+  }
+  function schedulePeerRestart(){
+    if(reconnectTimer) return;
+    const delay=Math.min(30000,1000*Math.pow(2,reconnectAttempt++));
+    setSignalStatus('Signal service unavailable — retrying in '+Math.ceil(delay/1000)+'s…', '#ffd700');
+    reconnectTimer=setTimeout(()=>{ reconnectTimer=null; startSignalPeer(); },delay);
+  }
+  function sendToExecutor(payload){
+    let delivered=false;
+    if(localSignalChannel){ try{ localSignalChannel.postMessage(Object.assign({},payload,{transport:'local'})); delivered=true; }catch(e){} }
+    if(signalConn && signalConn.open){ try{ signalConn.send(payload); delivered=true; }catch(e){} }
+    return delivered;
+  }
+  function sendLatestPrediction(){ if(latestPrediction) sendToExecutor(latestPrediction); }
+  function sendScannerStatus(){
+    sendToExecutor({type:'scanner_status',scanner_running:!!(typeof scanner!=='undefined'&&scanner.auto),market:(typeof currentMarket!=='undefined'?currentMarket:null),timestamp:Date.now()});
+  }
+
+  function startSignalPeer(){
+    try{
+      if(typeof Peer==='undefined') throw new Error('PeerJS did not load');
+      if(signalPeer){ try{ signalPeer.destroy(); }catch(e){} }
+      signalPeer=new Peer(SIGNAL_PEER_ID);
+      signalPeer.on('open', id=>{
+        setPeerId(id);
+        reconnectAttempt=0;
+        setSignalStatus('READY — waiting for active bot', '#00ffb3');
+        signalReady=true;
+      });
+      signalPeer.on('connection', conn=>{
+        if(signalConn && signalConn.open){ try{signalConn.close();}catch(e){} }
+        signalConn=conn;
+        signalConn.on('open',()=>{
+          setSignalStatus('EXECUTOR CONNECTED — latest prediction delivered', '#00ffb3');
+          sendScannerStatus();
+          sendLatestPrediction();
+        });
+        signalConn.on('data',data=>{ if(data && data.type==='executor_hello'){ sendScannerStatus(); sendLatestPrediction(); } });
+        signalConn.on('close',()=>{signalConn=null; signalReady=true; setSignalStatus('Executor disconnected — waiting for reconnection', '#ffd700');});
+        signalConn.on('error',()=>setSignalStatus('Executor signal error', '#ff6666'));
+      });
+      signalPeer.on('disconnected',()=>{signalReady=false; setSignalStatus('Signal service disconnected — reconnecting...', '#ffd700'); try{signalPeer.reconnect();}catch(e){schedulePeerRestart();}});
+      signalPeer.on('error',err=>{setSignalStatus('Signal error: '+(err.type||'connection error'), '#ff6666'); if(err && (err.type==='unavailable-id'||err.type==='network'||err.type==='server-error')) schedulePeerRestart();});
+    }catch(e){ setSignalStatus('Signal service unavailable — retrying', '#ff6666'); schedulePeerRestart(); }
+  }
+
+  window.sendScannerPrediction=function(pick,pct,L){
+    if(pick===null || pick===undefined) return;
+    latestPrediction={
+      type:'scanner_prediction',
+      signal_id:'DS-'+Date.now()+'-'+(++signalSeq),
+      market: (typeof currentMarket!=='undefined'?currentMarket:null),
+      contract:'MATCHES',
+      digit:Number(pick),
+      confidence:Number(pct)||0,
+      source_digit:(L===undefined?null:Number(L)),
+      timestamp:Date.now()
+    };
+    // Keep only the newest valid prediction; it is flushed as soon as the executor reconnects.
+    sendToExecutor(latestPrediction);
+  };
+
+  // Status stays separate from predictions so the executor can safely pause
+  // while the scanner is stopped, even before the next digit is selected.
+  const statusWait=setInterval(()=>{
+    if(typeof window.setMatchesSelection==='function'){
+      clearInterval(statusWait);
+      const original=window.setMatchesSelection;
+      window.setMatchesSelection=function(pick,pct,L){
+        const r=original.apply(this,arguments);
+        try{ sendScannerStatus(); }catch(e){}
+        return r;
+      };
+    }
+  },100);
+  startSignalPeer();
+})();
+</script>
+</body>
+</html>
