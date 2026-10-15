@@ -86,6 +86,29 @@
 </head>
 <body>
   <main class="container">
+  <section id="welcomePage">
+    <h1>👑 Welcome to DigitScopeAI Analysis Tool</h1>
+    <p>Your intelligent digit analysis platform.</p>
+
+    <button type="button" onclick="
+      document.getElementById('welcomePage').style.display='none';
+      document.getElementById('proceedPage').style.display='block';
+    ">
+      Next →
+    </button>
+  </section>
+
+  <section id="proceedPage" style="display:none;">
+    <h2>Welcome!</h2>
+    <p>Continue to access your analysis dashboard.</p>
+
+    <button type="button" onclick="
+      document.getElementById('proceedPage').style.display='none';
+      document.getElementById('loginPage').style.display='block';
+    ">
+      Proceed to Login →
+    </button>
+    </section>
 
     <section id="loginPage">
       <h1>👑 DigitScopeAI</h1>
